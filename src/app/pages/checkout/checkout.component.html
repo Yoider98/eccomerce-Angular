@@ -1,0 +1,59 @@
+<div class="checkout-container">
+  <div class="checkout-content">
+    <h1>Finalizar Compra</h1>
+    
+    <!-- Resumen del pedido -->
+    <div class="order-summary">
+      <h2>Resumen del Pedido</h2>
+      <div class="cart-items">
+        <div class="cart-item" *ngFor="let item of cartItems">
+          <img [src]="item.product.imageUrl" [alt]="item.product.name">
+          <div class="item-details">
+            <h3>{{ item.product.name }}</h3>
+            <p>Talla: {{ item.size }}</p>
+            <p>Color: {{ item.color }}</p>
+            <p>Cantidad: {{ item.quantity }}</p>
+            <p class="price">{{ item.product.price * item.quantity | currency }}</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="order-totals">
+        <div class="subtotal">
+          <span>Subtotal:</span>
+          <span>{{ cartInfo?.subtotal | currency }}</span>
+        </div>
+        <div class="discount" *ngIf="discountInfo.amount > 0">
+          <span>Descuento (Cupón: {{ discountInfo.couponCode }}):</span>
+          <span>-{{ discountInfo.amount | currency:'COP':'symbol' }}</span>
+        </div>
+        <div class="total">
+          <span>Total:</span>
+          <span>{{ cartInfo?.total | currency }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Información de envío -->
+    <div class="shipping-info">
+      <h2>Información de Envío</h2>
+      <div class="user-info">
+        <p><strong>Nombre:</strong> {{ user?.name }}</p>
+        <p><strong>Email:</strong> {{ user?.email }}</p>
+        <p><strong>Teléfono:</strong> {{ user?.phone }}</p>
+        <p><strong>Dirección:</strong> {{ user?.address }}</p>
+        <p><strong>Ciudad:</strong> {{ user?.city }}</p>
+        <p><strong>Código Postal:</strong> {{ user?.zipCode }}</p>
+        <p><strong>País:</strong> {{ user?.country }}</p>
+      </div>
+      <!-- Aquí irían los campos para la dirección de envío -->
+    </div>
+
+    <!-- Botón de procesar orden -->
+    <div class="checkout-actions">
+      <button class="btn-process" (click)="processOrder()" [disabled]="loading">
+        {{ loading ? 'Procesando...' : 'Procesar Orden' }}
+      </button>
+    </div>
+  </div>
+</div> 

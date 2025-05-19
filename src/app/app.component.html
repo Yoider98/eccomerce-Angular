@@ -1,0 +1,9 @@
+<app-navbar *ngIf="currentUrl !== '/login'"></app-navbar>
+
+<!-- Botón flotante de home -->
+<button *ngIf="currentUrl === '/login'" class="home-fab" routerLink="/" aria-label="Ir al inicio">
+  <mat-icon>home</mat-icon> 
+</button>
+
+<router-outlet></router-outlet>
+<app-footer *ngIf="router.url !== '/login'"></app-footer>

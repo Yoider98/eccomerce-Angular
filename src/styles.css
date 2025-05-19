@@ -1,0 +1,17 @@
+:root {
+  /* Fondo y base */
+  --bg-color: #eef5ff;
+  --secondary-color: #b4d4ff;
+
+  /* Colores principales */
+  --primary-color: #4490f3;
+  --accent-color: #176b87;
+
+  /* Texto y sombra */
+  --text-color: #176b87;
+  --light-text: #ffffff;
+  --shadow-color: rgba(0, 0, 0, 0.05);
+
+  /* Extras */
+  --border-radius: 20px;
+}

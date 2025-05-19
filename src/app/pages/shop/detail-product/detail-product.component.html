@@ -1,0 +1,196 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <button
+      type="button"
+      class="close"
+      aria-label="Cerrar"
+      style="font-size: 2rem; opacity: 1"
+      (click)="closeModal()"
+    >
+      &times;
+    </button>
+  </div>
+  <div class="modal-body row">
+    <div class="col-md-7">
+      <img
+        [src]="data.product.imageUrl"
+        loading="lazy"
+        class="img-fluid mb-3"
+        [alt]="data.product.name"
+      />
+    </div>
+    <div class="col-md-5">
+      <h5 class="modal-title">{{ data.product.name }}</h5>
+      <p>{{ data.product.description }}</p>
+      <p class="font-weight-bold">Precio: ${{ data.product.price }}</p>
+
+      <div class="size-selection">
+        <h4>Selecciona una talla</h4>
+        <div class="size-buttons">
+          <button
+            *ngFor="let size of data.product.sizes"
+            [class.selected]="selectedSize === size.valor"
+            (click)="selectSize(size)"
+          >
+            {{ size.valor }}
+          </button>
+        </div>
+      </div>
+      
+      <div class="color-selection" *ngIf="selectedSize">
+        <h4>Selecciona un color</h4>
+        <div class="color-buttons">
+          <button
+            *ngFor="let color of availableColors"
+            [class.selected]="selectedColor === color"
+            (click)="selectedColor = color"
+            [style.background-color]="color"
+          >
+            {{ color }}
+          </button>
+        </div>
+      </div>
+      
+      <div class="quantity-controls d-flex align-items-center">
+        <!-- Botón Disminuir -->
+        <button
+          *ngIf="quantity > 1"
+          class="icon-button quantity-btn decrease-btn"
+          (click)="deincreaseQuantity()"
+          aria-label="Disminuir cantidad"
+          [disabled]="quantity <= 1"
+        >
+          <mat-icon>remove</mat-icon>
+        </button>
+
+        <!-- Campo de cantidad editable -->
+        <input
+          type="number"
+          [(ngModel)]="quantity"
+          (input)="validateQuantity()"
+          min="1"
+          max="{{ availableStock }}"
+          class="quantity-input"
+          aria-label="Cantidad de productos"
+        />
+
+        <!-- Botón Incrementar -->
+        <button
+          class="icon-button quantity-btn increase-btn"
+          (click)="increaseQuantity()"
+          aria-label="Incrementar cantidad"
+          [disabled]="quantity >= availableStock"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+      
+      <p *ngIf="getAvailableStock() < quantity" class="text-danger">
+        Solo quedan {{ getAvailableStock() }} unidades disponibles en talla {{ selectedSize }} y color {{ selectedColor }}
+      </p>
+      
+      
+
+      <p *ngIf="availableStock < quantity" class="text-danger">
+        Solo quedan {{ availableStock }} unidades disponibles
+      </p>
+
+      <p *ngIf="availableStock < quantity" class="text-danger">
+        Solo quedan {{ availableStock }} unidades disponibles
+      </p>
+
+      <h4 class="font-weight-bold">Total: ${{ total }}</h4>
+
+      <ul class="list-unstyled mt-3">
+        <li>
+          <mat-icon color="primary">local_shipping</mat-icon> Envío gratis en
+          pedidos desde $50
+        </li>
+        <li>
+          <mat-icon color="primary">verified</mat-icon> Garantía de 30 días
+        </li>
+        <li>
+          <mat-icon color="primary">thumb_up</mat-icon> Producto 100% original
+        </li>
+      </ul>
+      <button
+        mat-raised-button
+        color="primary"
+        class="cartButton"
+        (click)="addToCart()"
+      >
+        <mat-icon class="cartIcon">shopping_cart</mat-icon>
+        Agregar al carrito
+      </button>
+
+      <mat-accordion>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Políticas de envío</mat-panel-title>
+          </mat-expansion-panel-header>
+          <p>
+            Los productos se envían en un plazo de 2 a 5 días hábiles. Te
+            notificaremos por correo una vez que el envío esté en camino. El
+            costo de envío se calcula al finalizar la compra.
+          </p>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Términos y condiciones</mat-panel-title>
+          </mat-expansion-panel-header>
+          <p>
+            Al realizar una compra, aceptas nuestras políticas de uso del sitio,
+            política de devoluciones y uso responsable de los productos. Lee más
+            en nuestra sección de términos completos.
+          </p>
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Políticas de devoluciones</mat-panel-title>
+          </mat-expansion-panel-header>
+          <p>
+            Los productos se envían en un plazo de 2 a 5 días hábiles. Te
+            notificaremos por correo una vez que el envío esté en camino. El
+            costo de envío se calcula al finalizar la compra.
+          </p>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+  </div>
+</div>
+<!-- Modal simple de guía de tallas -->
+<div class="size-guide-modal" *ngIf="showSizeGuide">
+  <div class="overlay" (click)="showSizeGuide = false"></div>
+  <div class="modal-content">
+    <button class="close-btn" (click)="showSizeGuide = false">&times;</button>
+    <h5 class="mb-3">
+      Guía de tallas - {{ data.product.category | titlecase }}
+    </h5>
+
+    <table class="table table-bordered table-sm">
+      <thead class="thead-light">
+        <tr *ngIf="data.product.category === 'calzado'">
+          <th>EU</th>
+          <th>CM</th>
+        </tr>
+        <tr
+          *ngIf="
+            data.product.category === 'ropa' &&
+            data.product.subcategory === 'vestidos'
+          "
+        >
+          <th>Talla</th>
+          <th>Busto (cm)</th>
+          <th>Cintura (cm)</th>
+          <th>Cadera (cm)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let size of sizeTable">
+          <td *ngFor="let cell of size">{{ cell }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

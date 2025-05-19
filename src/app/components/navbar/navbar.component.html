@@ -1,0 +1,44 @@
+<nav class="main-navbar">
+  <div class="navbar-container">
+    <!-- Logo -->
+    <a class="navbar-logo" routerLink="/">EcommerceApp</a>
+
+        <!-- Enlaces principales -->
+        <ul class="navbar-links" [class.open]="menuOpen">
+          <li><a routerLink="/">Inicio</a></li>
+          <li><a routerLink="/shop">Productos</a></li>
+          <li><a routerLink="/about">Nosotros</a></li>
+          <li><a routerLink="/contact">Contacto</a></li>
+        </ul>
+
+    <!-- Acciones SIEMPRE visibles a la derecha -->
+    <div class="navbar-actions-fixed">
+      <a style="text-decoration: none;" class="cart-btn" routerLink="/cart" title="Carrito">
+        <mat-icon>shopping_cart</mat-icon>
+      </a>
+      <ng-container *ngIf="!(isAuthenticated$ | async)">
+        <button class="login-icon-btn" routerLink="/login" aria-label="Iniciar sesión">
+          <mat-icon>login</mat-icon>
+        </button>
+      </ng-container>
+      <ng-container *ngIf="isAuthenticated$ | async">
+        <div class="user-menu">
+          <button class="user-btn" aria-label="Menú de usuario">
+            <mat-icon>account_circle</mat-icon>
+          </button>
+          <div class="user-dropdown">
+            <a routerLink="/profile">Perfil</a>
+            <a (click)="logout()">Cerrar sesión</a>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- Botón hamburguesa solo en móvil -->
+    <button class="navbar-toggle" (click)="toggleMenu()" aria-label="Abrir menú">
+      <mat-icon>{{ menuOpen ? 'close' : 'menu' }}</mat-icon>
+    </button>
+
+
+  </div>
+</nav>

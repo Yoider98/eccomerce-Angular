@@ -1,0 +1,19 @@
+<div class="success-container">
+  <div class="success-content">
+    <div class="success-icon">
+      <i class="material-icons">check_circle</i>
+    </div>
+    <h1>¡Pago Exitoso!</h1>
+    <p>Tu pago ha sido procesado correctamente.</p>
+    
+    <div class="payment-details">
+      <p><strong>ID de Pago:</strong> {{ paymentId }}</p>
+      <p><strong>Estado:</strong> {{ status }}</p>
+      <p><strong>ID de Orden:</strong> {{ merchantOrderId }}</p>
+    </div>
+
+    <button class="btn-home" (click)="goToHome()">
+      Volver al inicio
+    </button>
+  </div>
+</div> 

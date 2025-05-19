@@ -1,0 +1,339 @@
+<div *ngIf="isLoading" class="loading-indicator">
+  <p>Cargando productos...</p>
+</div>
+
+<div *ngIf="!isLoading" class="container-fluid" style="padding: 0px 40px">
+  <!-- Barra de ordenamiento -->
+  <div class="sort-bar d-none d-md-flex align-items-center mb-4">
+    <span class="sort-label">Ordenar por:</span>
+    <button
+      class="sort-btn"
+      [class.active]="sortOption === 'az'"
+      (click)="setSort('az')"
+    >
+      A-Z
+    </button>
+    <button
+      class="sort-btn"
+      [class.active]="sortOption === 'za'"
+      (click)="setSort('za')"
+    >
+      Z-A
+    </button>
+    <button
+      class="sort-btn"
+      [class.active]="sortOption === 'low-high'"
+      (click)="setSort('low-high')"
+    >
+      Menor precio
+    </button>
+    <button
+      class="sort-btn"
+      [class.active]="sortOption === 'high-low'"
+      (click)="setSort('high-low')"
+    >
+      Mayor precio
+    </button>
+  </div>
+  <div class="row">
+    <!-- Barra flotante de filtros en móvil -->
+    <div class="mobile-filter-bar" *ngIf="!areFiltersVisible">
+      <div class="mobile-filter-icons">
+        <div class="filter-icon-item" *ngIf="selectedCategory">
+          <mat-icon>category</mat-icon>
+          <span class="filter-tooltip">{{ selectedCategory }}</span>
+        </div>
+        <div class="filter-icon-item" *ngIf="selectedGender">
+          <mat-icon>person</mat-icon>
+          <span class="filter-tooltip">{{ selectedGender }}</span>
+        </div>
+        <div class="filter-icon-item" *ngIf="selectedColor">
+          <mat-icon>palette</mat-icon>
+          <span class="filter-tooltip">{{ selectedColor }}</span>
+        </div>
+      </div>
+      <button class="mobile-expand-filters-btn" (click)="toggleFilters()">
+        <span>Mostrar filtros</span>
+      </button>
+    </div>
+    <!-- Panel de filtros colapsado (iconos) -->
+    <div class="col-1 filter-icons" *ngIf="!areFiltersVisible">
+      <div class="filter-icons-container">
+        <div class="filter-icon-item" *ngIf="selectedCategory">
+          <mat-icon>category</mat-icon>
+          <span class="filter-tooltip">{{ selectedCategory }}</span>
+        </div>
+        <div class="filter-icon-item" *ngIf="selectedGender">
+          <mat-icon>person</mat-icon>
+          <span class="filter-tooltip">{{ selectedGender }}</span>
+        </div>
+        <div class="filter-icon-item" *ngIf="selectedColor">
+          <mat-icon>palette</mat-icon>
+          <span class="filter-tooltip">{{ selectedColor }}</span>
+        </div>
+
+        <button class="expand-filters-btn" (click)="toggleFilters()">
+          <mat-icon>filter_list</mat-icon>
+        </button>
+      </div>
+    </div>
+    <!-- Panel de filtros -->
+    <div class="col-md-3 filters-panel" [class.hidden]="!areFiltersVisible">
+      <div class="filters-header">
+        <h5>Filtros</h5>
+        <button class="close-filters-btn" (click)="toggleFilters()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div class="filters-content">
+        <h5>Filtros</h5>
+
+        <!-- Filtro por categoría -->
+        <div class="mb-3">
+          <label for="categoryFilter">Categoría</label>
+          <select
+            id="categoryFilter"
+            class="form-control"
+            [(ngModel)]="selectedCategory"
+            (change)="applyFilters()"
+          >
+            <option value="">Todas</option>
+            <option *ngFor="let category of categories" [value]="category">
+              {{ category }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Filtro por género -->
+        <div class="mb-3">
+          <label for="genderFilter">Género</label>
+          <select
+            id="genderFilter"
+            class="form-control"
+            [(ngModel)]="selectedGender"
+            (change)="applyFilters()"
+          >
+            <option value="">Todos</option>
+            <option *ngFor="let gender of genders" [value]="gender">
+              {{ gender }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Filtro por color -->
+        <div class="mb-3">
+          <label for="colorFilter">Color</label>
+          <select
+            id="colorFilter"
+            class="form-control"
+            [(ngModel)]="selectedColor"
+            (change)="applyFilters()"
+          >
+            <option value="">Todos</option>
+            <option *ngFor="let color of colors" [value]="color">
+              {{ color }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Filtro por talla -->
+        <div class="mb-3">
+          <label for="sizeFilter">Talla</label>
+          <select
+            id="sizeFilter"
+            class="form-control"
+            [(ngModel)]="selectedSize"
+            (change)="applyFilters()"
+          >
+            <option value="">Todas</option>
+            <option *ngFor="let size of sizes" [value]="size">
+              {{ size }}
+            </option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <div class="d-flex justify-content-between">
+            <label>Min</label>
+            <div class="price-value">{{ selectedMinPrice }}</div>
+            <label>Max</label>
+            <div class="price-value">{{ selectedMaxPrice }}</div>
+          </div>
+
+          <div class="range-slider">
+            <input
+              type="range"
+              [min]="minPrice"
+              [max]="maxPrice"
+              [(ngModel)]="selectedMinPrice"
+              (input)="onMinPriceChange()"
+              [style.zIndex]="selectedMinPrice > maxPrice - 100 ? 5 : 3"
+            />
+            <input
+              type="range"
+              [min]="minPrice"
+              [max]="maxPrice"
+              [(ngModel)]="selectedMaxPrice"
+              (input)="onMaxPriceChange()"
+            />
+            <div
+              class="slider-track"
+              [style.left.%]="
+                ((selectedMinPrice - minPrice) / (maxPrice - minPrice)) * 100
+              "
+              [style.right.%]="
+                100 -
+                ((selectedMaxPrice - minPrice) / (maxPrice - minPrice)) * 100
+              "
+            ></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Barra de ordenamiento expandible en móvil -->
+    <div class="sort-bar-mobile d-md-none mb-3">
+      <button
+        class="sort-mobile-toggle"
+        (click)="showSortMobile = !showSortMobile"
+      >
+        <mat-icon>sort</mat-icon> Ordenar
+        <mat-icon>{{
+          showSortMobile ? "expand_less" : "expand_more"
+        }}</mat-icon>
+      </button>
+      <div class="sort-mobile-options" *ngIf="showSortMobile">
+        <button
+          class="sort-btn"
+          [class.active]="sortOption === 'az'"
+          (click)="setSort('az'); showSortMobile = false"
+        >
+          A-Z
+        </button>
+        <button
+          class="sort-btn"
+          [class.active]="sortOption === 'za'"
+          (click)="setSort('za'); showSortMobile = false"
+        >
+          Z-A
+        </button>
+        <button
+          class="sort-btn"
+          [class.active]="sortOption === 'low-high'"
+          (click)="setSort('low-high'); showSortMobile = false"
+        >
+          Menor precio
+        </button>
+        <button
+          class="sort-btn"
+          [class.active]="sortOption === 'high-low'"
+          (click)="setSort('high-low'); showSortMobile = false"
+        >
+          Mayor precio
+        </button>
+      </div>
+    </div>
+
+    <!-- Productos -->
+    <div
+      [class.col-md-11]="!areFiltersVisible"
+      [class.col-md-9]="areFiltersVisible"
+    >
+      <div class="row">
+        <div class="col-md-3" *ngFor="let product of filteredProducts">
+          <div class="card mb-4 shadow-sm">
+            <img
+              [src]="product.imageUrl"
+              class="card-img-top"
+              [alt]="product.name"
+            />
+            <div class="card-body">
+              <h5 class="card-title">{{ product.name }}</h5>
+              <p class="card-text text-muted">{{ product.description }}</p>
+              <p class="card-text font-weight-bold">${{ product.price }}</p>
+              <div class="justify-content-between gap-2 my-3 button-group">
+                <button
+                  class="btn btn-primary flex-fill"
+                  (click)="openModal(product)"
+                >
+                  <mat-icon>add_shopping_cart</mat-icon> Agregar
+                </button>
+                <button
+                  class="btn btn-outline-primary flex-fill"
+                  (click)="openProductModal(product)"
+                >
+                  <mat-icon>visibility</mat-icon> Ver más
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de selección de talla -->
+<div *ngIf="isModalOpen" class="modal-overlay">
+  <div class="modal-content">
+    <h2>{{ modalProduct?.name }}</h2>
+    <img
+      *ngIf="modalProduct?.imageUrl"
+      [src]="modalProduct.imageUrl"
+      [alt]="modalProduct.name"
+      class="modal-product-img"
+    />
+
+    <div class="modal-section">
+      <label class="modal-label">Selecciona una talla:</label>
+      <div class="modal-sizes">
+        <button
+          *ngFor="let size of modalAvailableSizes"
+          [class.selected]="modalSelectedSize === size.valor"
+          [disabled]="!hasStockForSize(size)"
+          (click)="selectSize(size)"
+        >
+          {{ size.valor }}
+        </button>
+      </div>
+    </div>
+
+    <div class="modal-section" *ngIf="modalSelectedSize">
+      <label class="modal-label">Selecciona un color:</label>
+      <div class="modal-colors" *ngIf="modalSelectedSize">
+        <button
+          *ngFor="let color of getColorsForSelectedSize()"
+          [class.selected]="modalSelectedColor === color.color"
+          [disabled]="color.cant <= 0"
+          (click)="selectColor(color.color)"
+          [ngStyle]="getColorStyle(color.color)"
+          [title]="color.color + (color.cant > 0 ? '' : ' (Sin stock)')"
+        >
+          <span *ngIf="color.cant <= 0" class="out-of-stock">✕</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="modal-section" *ngIf="modalSelectedSize && modalSelectedColor">
+      <p class="stock-info">
+        Stock disponible:
+        {{ getAvailableStock(modalSelectedSize, modalSelectedColor) }}
+      </p>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="closeModal()">Cancelar</button>
+      <button
+        class="btn-confirm"
+        [disabled]="
+          !modalSelectedSize ||
+          !modalSelectedColor ||
+          getAvailableStock(modalSelectedSize, modalSelectedColor) <= 0
+        "
+        (click)="confirmSelection()"
+      >
+        Confirmar
+      </button>
+    </div>
+  </div>
+</div>

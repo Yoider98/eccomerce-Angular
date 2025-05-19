@@ -1,0 +1,154 @@
+<div class="quick-checkout-container">
+  <div class="quick-checkout-content">
+    <h1>Compra Rápida</h1>
+    
+    <!-- Resumen del pedido -->
+    <div class="order-summary">
+      <h2>Resumen del Pedido</h2>
+      <div class="cart-items">
+        <div class="cart-item" *ngFor="let item of cartItems">
+          <img [src]="item.product.imageUrl" [alt]="item.product.name">
+          <div class="item-details">
+            <h3>{{ item.product.name }}</h3>
+            <p>Talla: {{ item.size }}</p>
+            <p>Color: {{ item.color }}</p>
+            <p>Cantidad: {{ item.quantity }}</p>
+            <p class="price">{{ item.product.price * item.quantity | currency }}</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="order-totals">
+        <div class="subtotal">
+          <span>Subtotal:</span>
+          <span>{{ cartInfo?.subtotal | currency }}</span>
+        </div>
+        <div class="discount" *ngIf="discountInfo.amount > 0">
+          <span>Descuento (Cupón: {{ discountInfo.couponCode }}):</span>
+          <span>-{{ discountInfo.amount | currency:'COP':'symbol' }}</span>
+        </div>
+        <div class="total">
+          <span>Total:</span>
+          <span>{{ cartInfo?.total | currency }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulario de compra rápida -->
+    <form [formGroup]="quickCheckoutForm" (ngSubmit)="onSubmit()" class="quick-checkout-form">
+      <h2>Información de Contacto</h2>
+      
+      <div class="form-group">
+        <label for="nombre">Nombre</label>
+        <input 
+          type="text" 
+          id="nombre" 
+          formControlName="nombre" 
+          placeholder="Tu nombre"
+          [class.error]="quickCheckoutForm.get('nombre')?.invalid && quickCheckoutForm.get('nombre')?.touched"
+        >
+        <div class="error-message" *ngIf="quickCheckoutForm.get('nombre')?.invalid && quickCheckoutForm.get('nombre')?.touched">
+          El nombre es requerido y debe tener al menos 3 caracteres
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="apellido">Apellido</label>
+        <input 
+          type="text" 
+          id="apellido" 
+          formControlName="apellido" 
+          placeholder="Tu apellido"
+          [class.error]="quickCheckoutForm.get('apellido')?.invalid && quickCheckoutForm.get('apellido')?.touched"
+        >
+        <div class="error-message" *ngIf="quickCheckoutForm.get('apellido')?.invalid && quickCheckoutForm.get('apellido')?.touched">
+          El apellido es requerido y debe tener al menos 3 caracteres
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input 
+          type="email" 
+          id="email" 
+          formControlName="email" 
+          placeholder="tu@email.com"
+          [class.error]="quickCheckoutForm.get('email')?.invalid && quickCheckoutForm.get('email')?.touched"
+        >
+        <div class="error-message" *ngIf="quickCheckoutForm.get('email')?.invalid && quickCheckoutForm.get('email')?.touched">
+          Por favor ingresa un email válido
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="telefono">Teléfono</label>
+        <input 
+          type="tel" 
+          id="telefono" 
+          formControlName="telefono" 
+          placeholder="Tu número de teléfono"
+          [class.error]="quickCheckoutForm.get('telefono')?.invalid && quickCheckoutForm.get('telefono')?.touched"
+        >
+        <div class="error-message" *ngIf="quickCheckoutForm.get('telefono')?.invalid && quickCheckoutForm.get('telefono')?.touched">
+          Ingresa un número de teléfono válido (10 dígitos)
+        </div>
+      </div>
+
+      <h2>Dirección de Envío</h2>
+
+      <div class="form-group">
+        <label for="direccion">Dirección</label>
+        <input 
+          type="text" 
+          id="direccion" 
+          formControlName="direccion" 
+          placeholder="Tu dirección completa"
+          [class.error]="quickCheckoutForm.get('direccion')?.invalid && quickCheckoutForm.get('direccion')?.touched"
+        >
+        <div class="error-message" *ngIf="quickCheckoutForm.get('direccion')?.invalid && quickCheckoutForm.get('direccion')?.touched">
+          La dirección es requerida y debe tener al menos 5 caracteres
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="ciudad">Ciudad</label>
+        <input 
+          type="text" 
+          id="ciudad" 
+          formControlName="ciudad" 
+          placeholder="Tu ciudad"
+          [class.error]="quickCheckoutForm.get('ciudad')?.invalid && quickCheckoutForm.get('ciudad')?.touched"
+        >
+        <div class="error-message" *ngIf="quickCheckoutForm.get('ciudad')?.invalid && quickCheckoutForm.get('ciudad')?.touched">
+          La ciudad es requerida y debe tener al menos 3 caracteres
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="departamento">Departamento</label>
+        <select 
+          id="departamento" 
+          formControlName="departamento"
+          [class.error]="quickCheckoutForm.get('departamento')?.invalid && quickCheckoutForm.get('departamento')?.touched"
+        >
+          <option value="">Selecciona un departamento</option>
+          <option *ngFor="let depto of departamentos" [value]="depto">{{ depto }}</option>
+        </select>
+        <div class="error-message" *ngIf="quickCheckoutForm.get('departamento')?.invalid && quickCheckoutForm.get('departamento')?.touched">
+          Por favor selecciona un departamento
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button 
+          type="submit" 
+          class="btn-process" 
+          [disabled]="quickCheckoutForm.invalid || loading"
+        >
+          {{ loading ? 'Procesando...' : 'Completar Compra' }}
+        </button>
+        
+      </div>
+    </form>
+  </div>
+</div> 

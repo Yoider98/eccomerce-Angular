@@ -1,0 +1,23 @@
+<div class="pending-container">
+  <div class="pending-content">
+    <div class="pending-icon">
+      <i class="material-icons">schedule</i>
+    </div>
+    <h1>Pago en Proceso</h1>
+    <p>Tu pago está siendo procesado. Esto puede tomar unos minutos.</p>
+    
+    <div class="payment-details">
+      <p><strong>ID de Pago:</strong> {{ paymentId }}</p>
+      <p><strong>Estado:</strong> {{ status }}</p>
+      <p><strong>ID de Orden:</strong> {{ merchantOrderId }}</p>
+    </div>
+
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+    </div>
+
+    <button class="btn-home" (click)="goToHome()">
+      Volver al inicio
+    </button>
+  </div>
+</div> 

@@ -1,0 +1,266 @@
+:host {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.25);
+  z-index: 1050;
+}
+
+.modal-content {
+  position: relative;
+  background-color: var(--light-text);
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  max-width: 80%;
+  margin: 2rem auto;
+  padding: 1rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #d0d9e2;
+}
+.modal-body {
+  display: flex;
+  overflow-y: auto; /* Habilita scroll vertical */
+  flex-grow: 1; /* Toma el espacio restante */
+  padding: 1rem;
+}
+
+.modal-body img {
+  border-radius: 10px;
+  width: 80%;
+  object-fit: cover;
+  margin: auto;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid #d0d9e2;
+}
+.icon-button {
+  background: none;
+  border: none;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.icon-button mat-icon {
+  font-size: 24px;
+  color: var(--primary-color); /* Color azul, puedes cambiarlo */
+  vertical-align: middle;
+}
+.list-unstyled li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.list-unstyled mat-icon {
+  margin-right: 0.5rem;
+}
+.color-swatch {
+  margin: 2px;
+  font-size: 14px;
+  padding: 6px 12px;
+  border: 1px solid #d0d9e2;
+  border-radius: 20px;
+  background-color: var(--bg-color);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.color-swatch.selected {
+  border: 2px solid var(--text-color);
+  font-weight: bold;
+  background-color: var(--secondary-color);
+}
+.size-swatch {
+  margin: 2px;
+  padding: 6px 12px;
+  border: 1px solid #d0d9e2;
+  border-radius: 10px;
+  background-color: var(--light-text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.size-swatch:hover {
+  background-color: var(--secondary-color);
+}
+.size-swatch.selected {
+  border: 2px solid var(--text-color);
+  font-weight: bold;
+  background-color: var(--secondary-color);
+}
+.quantity-controls {
+  justify-content: center;
+  align-items: center;
+}
+
+.icon-button.quantity-btn {
+  border-radius: 50%;
+  border: 1px solid #d0d9e2;
+  background-color: var(--bg-color);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.icon-button.quantity-btn:hover {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: var(--light-text);
+}
+
+.icon-button.quantity-btn:disabled {
+  background-color: #d0d9e2;
+  border-color: #eee;
+  color: #888;
+  cursor: not-allowed;
+}
+
+.quantity-input {
+  width: 60px;
+  height: 40px;
+  font-size: 1.2rem;
+  text-align: center;
+  margin: 0 10px;
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #d0d9e2;
+  transition: border-color 0.2s ease;
+}
+
+.quantity-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.text-danger {
+  font-size: 0.9rem;
+  color: var(--accent-color);
+  margin-top: 5px;
+}
+
+.decrease-btn {
+  background-color: #a2c4e8;
+  color: var(--accent-color);
+}
+
+.decrease-btn:hover {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+.increase-btn {
+  background-color: #a2c4e8;
+  color: var(--primary-color);
+}
+
+.increase-btn:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+.size-guide-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1050;
+}
+
+.size-guide-modal .overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+.size-guide-modal .modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--light-text);
+  padding: 1rem;
+  max-width: 600px;
+  width: 90%;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+.size-guide-modal img {
+  max-width: 80%;
+  height: 80%;
+  margin-top: 1rem;
+}
+
+.size-guide-modal .close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  cursor: pointer;
+}
+
+/* CSS opcional */
+.cartIcon {
+  margin-right: 8px;
+  transition: transform 0.2s;
+}
+
+.size-selection, .color-selection {
+  margin-bottom: 24px;
+}
+
+.size-buttons, .color-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.size-buttons button,
+.color-buttons button {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  background: var(--bg-color);
+  color: var(--accent-color);
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s, border 0.2s;
+  box-shadow: 0 1px 4px var(--shadow-color);
+  margin-right: 10px;
+  margin-bottom: 8px;
+}
+
+.size-buttons button.selected,
+.color-buttons button.selected {
+  background: var(--primary-color);
+  color: var(--light-text);
+  box-shadow: 0 2px 8px var(--shadow-color);
+  border: 2px solid var(--accent-color);
+}
+
+.size-buttons button:hover,
+.color-buttons button:hover {
+  background: var(--secondary-color);
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color);
+}
+
+.color-buttons button {
+  min-width: 80px;
+  text-transform: capitalize;
+}

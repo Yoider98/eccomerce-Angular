@@ -1,0 +1,230 @@
+.main-navbar {
+  background: var(--light-text);
+  box-shadow: 0 2px 8px var(--shadow-color);
+  padding: 0.5rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navbar-logo {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  text-decoration: none;
+  letter-spacing: 1px;
+  margin-right: 15px;
+}
+
+.navbar-links {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+  margin: 0;
+}
+
+.navbar-links a {
+  color: var(--accent-color);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1.05rem;
+  transition: color 0.2s;
+}
+
+.navbar-links a:hover {
+  color: var(--primary-color);
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.cart-btn {
+  color: var(--primary-color);
+  border-radius: 50%;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  transition: background 0.2s;
+}
+
+.cart-btn:hover {
+  background: var(--accent-color);
+  color: var(--light-text);
+}
+
+.login-btn {
+  color: var(--primary-color);
+  font-weight: 600;
+  text-decoration: none;
+  padding: 6px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--primary-color);
+  transition: background 0.2s, color 0.2s;
+}
+
+.login-btn:hover {
+  background: var(--primary-color);
+  color: var(--light-text);
+}
+
+.user-menu {
+  position: relative;
+}
+
+.user-btn {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.user-btn:hover {
+  background: var(--primary-light);
+}
+
+.user-dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 120%;
+  background: var(--light-text);
+  box-shadow: 0 2px 8px var(--shadow-color);
+  border-radius: 8px;
+  min-width: 140px;
+  z-index: 10;
+  flex-direction: column;
+  padding: 0.5rem 0.75rem;
+}
+
+.user-menu:hover .user-dropdown,
+.user-menu:focus-within .user-dropdown {
+  display: flex;
+}
+
+.user-dropdown a {
+  padding: 10px 18px;
+  color: var(--accent-color);
+  text-decoration: none;
+  font-size: 1rem;
+  transition: background 0.2s;
+  border-radius: 8px;
+}
+
+.user-dropdown a:hover {
+  background: var(--secondary-color);
+  color: var(--primary-color);
+}
+
+@media (max-width: 900px) {
+  .navbar-container {
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 1rem;
+  }
+  .navbar-links {
+    gap: 1rem;
+  }
+  .user-dropdown {
+    padding: 1rem 1.5rem;
+  }
+}
+
+/* Oculta el botón hamburguesa en escritorio */
+.navbar-toggle {
+  display: none;
+}
+
+/* Móvil: muestra el botón hamburguesa y oculta enlaces por defecto */
+@media (max-width: 900px) {
+  .navbar-container {
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
+    padding: 0 1rem;
+    position: relative;
+  }
+  .navbar-logo {
+    flex: 1;
+  }
+  .navbar-actions-fixed {
+    order: 2;
+    gap: 0.5rem;
+  }
+  .navbar-toggle {
+    display: block;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: var(--primary-color);
+    cursor: pointer;
+    order: 3;
+    margin-left: 0.5rem;
+  }
+  .navbar-links {
+    display: none;
+    flex-direction: column;
+    width: 100vw;
+    background: var(--light-text);
+    position: absolute;
+    top: 60px;
+    left: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 8px var(--shadow-color);
+    padding: 1rem 0;
+    gap: 0;
+  }
+  .navbar-links.open {
+    display: flex;
+  }
+  .navbar-links li {
+    width: 100%;
+    text-align: left;
+    padding: 0.5rem 2rem;
+  }
+}
+
+/* Acciones fijas a la derecha en móvil */
+.navbar-actions-fixed {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: auto;
+}
+
+.login-icon-btn {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.login-icon-btn:hover {
+  background: var(--accent-color);
+  color: var(--light-text);
+}
+
+/* El menú desplegable ya está estilizado, pero puedes mejorar la visibilidad en móvil si lo deseas */

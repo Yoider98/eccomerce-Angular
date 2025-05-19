@@ -1,0 +1,115 @@
+<div class="container mt-4">
+  <div class="cart-container">
+    <h2 class="cart-title">Mi Carrito de Compras</h2>
+    
+    <!-- Carrito vacío -->
+    <div *ngIf="cartItems.length === 0" class="empty-cart">
+      <mat-icon class="empty-cart-icon">shopping_cart</mat-icon>
+      <p>Tu carrito está vacío</p>
+      <button mat-raised-button color="primary" routerLink="/products">
+        Continuar Comprando
+      </button>
+    </div>
+
+    <!-- Carrito con items -->
+    <div *ngIf="cartItems.length > 0" class="cart-content">
+      <div class="cart-items">
+        <div *ngFor="let item of cartItems" class="cart-item">
+          <div class="item-image">
+            <img [src]="item.product.imageUrl" [alt]="item.product.name" />
+          </div>
+          
+          <div class="item-details">
+            <h3 class="item-name">{{ item.product.name }}</h3>
+            <div class="item-specs">
+              <span class="spec-badge">
+                <mat-icon>straighten</mat-icon>
+                {{ item.size }}
+              </span>
+              <span class="spec-badge">
+                <mat-icon>palette</mat-icon>
+                {{ item.color }}
+              </span>
+            </div>
+            
+            <div class="quantity-controls">
+              <button mat-icon-button (click)="deincreaseQuantity(item.product.id, item.size, item.color)"
+                      [disabled]="item.quantity <= 1">
+                <mat-icon>remove</mat-icon>
+              </button>
+              <span class="quantity">{{ item.quantity }}</span>
+              <button mat-icon-button (click)="increaseQuantity(item.product.id, item.size, item.color)">
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <div class="item-price">
+            <p class="price">${{ item.product.price * item.quantity }}</p>
+            <button mat-icon-button color="warn" (click)="removeItem(item.product.id, item.size, item.color)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="cart-summary">
+        <div class="coupon-section">
+          <div class="coupon-header">
+            <mat-icon>local_offer</mat-icon>
+            <h3>Aplicar Cupón</h3>
+          </div>
+          <div class="coupon-input">
+            <mat-form-field appearance="outline" class="coupon-field">
+              <input matInput [(ngModel)]="couponCode" placeholder="Ingresa tu cupón" style="margin: 5px;">
+            </mat-form-field>
+            <button mat-raised-button color="primary" class="apply-button" (click)="applyCoupon()">
+              <mat-icon>check_circle</mat-icon>
+              Aplicar
+            </button>
+          </div>
+          <div class="coupon-message" *ngIf="getTotalDiscount(getsubtotal()) > 0">
+            <mat-icon class="success-icon">celebration</mat-icon>
+            <span>¡Cupón aplicado con éxito!</span>
+          </div>
+        </div>
+        <div class="summary-item">
+          <span>Subtotal</span>
+          <span>${{ getsubtotal() }}</span>
+        </div>
+        <div class="summary-item" *ngFor="let coupon of appliedCoupons">
+          <span>
+            Cupón: <strong>{{ coupon.code }}</strong>
+            <button class="remove-coupon-btn" mat-icon-button color="warn" (click)="removeCoupon(coupon.code)" aria-label="Quitar cupón">
+              <mat-icon>close</mat-icon>
+            </button>
+          </span>
+          <span class="discount-amount">
+            - $
+            <ng-container *ngIf="coupon.type === 'percentage'">
+              {{ (getsubtotal() * coupon.discount / 100) | number:'1.0-2' }}
+            </ng-container>
+            <ng-container *ngIf="coupon.type === 'fixed'">
+              {{ coupon.discount }}
+            </ng-container>
+          </span>
+        </div>
+        <div class="summary-item" *ngIf="appliedCoupons.length > 1">
+          <span>Total descuentos</span>
+          <span class="discount-amount">- ${{ getTotalDiscount(getsubtotal()) | number:'1.0-2' }}</span>
+        </div>
+        <div class="summary-item">
+          <span>Envío</span>
+          <span>Gratis</span>
+        </div>
+        <div class="summary-item total">
+          <span>Total</span>
+          <span>${{ getTotal() }}</span>
+        </div>
+        <button (click)="totalItems()" mat-raised-button color="primary" class="checkout-button">
+          Proceder al Pago
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

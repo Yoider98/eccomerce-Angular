@@ -1,0 +1,172 @@
+<!-- Hero Section -->
+<section class="hero">
+  <div class="hero-text">
+    <h1>Descubre tu estilo tropical 🌴</h1>
+    <p>¡Luce auténtico con nuestra colección fresca y vibrante para el verano!</p>    
+    <button class="btn-primary">Explorar colección</button>
+  </div>
+</section>
+
+
+<!-- Categorías -->
+<section class="categories-section">
+  <div class="categories-header">
+    <h2>Categorías</h2>
+    <p class="categories-subtitle">Explora colecciones para cada estilo y ocasión</p>
+  </div>
+
+  <div class="category-list">
+    <div class="category-card" *ngFor="let category of categories" (click)="goToCategory(category)">
+      <div class="image-container">
+        <img [src]="category.img" [alt]="category.name" />
+        <div class="overlay">
+          <h3>{{ category.name }}</h3>
+          <p class="see-link">Mirar colección</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Colecciones -->
+<section class="collections-carousel">
+  <h2>Lo más vendido</h2>
+  <swiper
+    [slidesPerView]="3"
+    [spaceBetween]="20"
+    [loop]="true"
+    [autoplay]="{ delay: 3000, disableOnInteraction: true }"
+    [speed]="1500"
+    [breakpoints]="{
+      '320':  { 'slidesPerView': 1 },
+      '640':  { 'slidesPerView': 1 },
+      '768':  { 'slidesPerView': 2 },
+      '1024': { 'slidesPerView': 3 }
+    }"
+  >
+  <ng-template swiperSlide *ngFor="let product of products">
+    <div class="product-card"  (click)="openProductModal(product)">
+      <img [src]="product.imageUrl" [alt]="product.name" class="product-image" />
+      <h3>{{ product.name }}</h3>
+      <p class="price">{{ product.price | currency }}</p>
+    </div>
+  </ng-template>
+  </swiper>
+</section>
+
+
+<section class="testimonials-carousel">
+  <h2>Testimonios</h2>
+  <swiper
+  [slidesPerView]="4"
+  [spaceBetween]="20"
+  [loop]="true"
+  [autoplay]="{ delay: 500, disableOnInteraction: false }"
+  [speed]="2200"
+  [breakpoints]="{
+    '320':  { 'slidesPerView': 1 },
+    '640':  { 'slidesPerView': 1 },
+    '768':  { 'slidesPerView': 2 },
+    '1024': { 'slidesPerView': 3 }
+  }"
+>
+    <ng-template swiperSlide *ngFor="let t of testimonials">
+      <div class="testimonial">
+        <img [src]="t.photo" [alt]="t.name" class="testimonial-photo" />
+        <div class="testimonial-stars">
+          <ng-container *ngFor="let star of [].constructor(t.stars)">
+            <span>⭐</span>
+          </ng-container>
+        </div>
+        <blockquote>{{ t.comment }}</blockquote>
+        <p class="testimonial-name">{{ t.name }}</p>
+      </div>
+    </ng-template>
+  </swiper>
+</section>
+
+<!-- Newsletter -->
+<section class="newsletter">
+  <div class="overlay">
+    <h3>¡No te quedes por fuera!</h3>
+<p>Suscríbete y recibe ofertas exclusivas, lanzamientos anticipados y descuentos especiales directo en tu correo.</p>
+    <form (submit)="subscribe()" class="newsletter-form">
+      <label for="email" class="sr-only">Correo electrónico</label>
+      <input
+        type="email"
+        id="email"
+        placeholder="Tu correo electrónico"
+        [(ngModel)]="email"
+        name="email"
+        required
+      />
+      <button type="submit" class="btn-secondary">Suscribirme</button>
+    </form>
+  </div>
+</section>
+
+<div *ngIf="isModalOpen" class="modal-overlay">
+  <div class="modal-content">
+    <h2>{{ modalProduct?.name }}</h2>
+    <img
+      *ngIf="modalProduct?.imageUrl"
+      [src]="modalProduct.imageUrl"
+      [alt]="modalProduct.name"
+      class="modal-product-img"
+    />
+
+    <div class="modal-section">
+      <label class="modal-label">Selecciona una talla:</label>
+      <div class="modal-sizes">
+        <button
+          *ngFor="let size of modalAvailableSizes"
+          [class.selected]="modalSelectedSize === size.valor"
+          [disabled]="!hasStockForSize(size)"
+          (click)="selectSize(size)"
+        >
+          {{ size.valor }}
+        </button>
+      </div>
+    </div>
+
+    <div class="modal-section" *ngIf="modalSelectedSize">
+      <label class="modal-label">Selecciona un color:</label>
+      <div class="modal-colors" *ngIf="modalSelectedSize">
+        <button
+          *ngFor="let color of getColorsForSelectedSize()"
+          [class.selected]="modalSelectedColor === color.color"
+          [disabled]="color.cant <= 0"
+          (click)="selectColor(color.color)"
+          [ngStyle]="getColorStyle(color.color)"
+          [title]="color.color + (color.cant > 0 ? '' : ' (Sin stock)')"
+        >
+          <span *ngIf="color.cant <= 0" class="out-of-stock">✕</span>
+          {{ color.color }}
+        </button>
+      </div>
+    </div>
+
+    <div class="modal-section" *ngIf="modalSelectedSize && modalSelectedColor">
+      <p class="stock-info">
+        Stock disponible:
+        {{ getAvailableStock(modalSelectedSize, modalSelectedColor) }}
+      </p>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="closeModal()">Cancelar</button>
+      <button
+        class="btn-confirm"
+        [disabled]="
+          !modalSelectedSize ||
+          !modalSelectedColor ||
+          getAvailableStock(modalSelectedSize, modalSelectedColor) <= 0
+        "
+        (click)="confirmSelection()"
+      >
+        Confirmar
+      </button>
+    </div>
+  </div>
+</div>
