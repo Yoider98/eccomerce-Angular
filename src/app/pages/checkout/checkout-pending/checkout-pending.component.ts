@@ -27,8 +27,10 @@ export class CheckoutPendingComponent implements OnInit {
       this.paymentId = params['payment_id'] || '';
       this.status = params['status'] || '';
       this.merchantOrderId = params['merchant_order_id'] || '';
+      const cartId = JSON.parse(localStorage.getItem('cartId'));
+      const user = JSON.parse(localStorage.getItem('user'));
 
-      await this.checkoutService.getPaymentStatus(this.paymentId, this.status).then(response => {
+      await this.checkoutService.getPaymentStatus(this.paymentId, cartId, user.id).then(response => {
         if (response.status === 'success') {
           this.isLoading = false;
           this.showMessage('Tu pago está siendo procesado. Te notificaremos cuando esté confirmado.', 'info');

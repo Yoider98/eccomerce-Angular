@@ -1,5 +1,8 @@
 <div class="failure-container">
-  <div class="failure-content">
+  <div *ngIf="isLoading" class="spinner-grow text-primary" role="status" class=".loader">
+    <span class="sr-only">Loading...</span>
+  </div>
+  <div *ngIf="!isLoading" class="failure-content">
     <div class="failure-icon">
       <i class="material-icons">error</i>
     </div>

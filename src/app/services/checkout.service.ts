@@ -45,4 +45,8 @@ export class CheckoutService {
   async getPaymentStatus(paymentId: string, cartId: string, userId:string): Promise<any> {  
       return this.api.get<any>(`payment/status${paymentId}?cartId=${cartId}&userId=${userId}`);
   }
+
+  async deleteCart(cartId: string): Promise<any> {  
+    return this.api.delete<any>(`carts${cartId}`);
+}
 }
