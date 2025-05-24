@@ -1,5 +1,6 @@
 import { BrowserModule } from "@angular/platform-browser";
 import { NgModule } from "@angular/core";
+import { CommonModule } from '@angular/common';
 
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
@@ -30,6 +31,11 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { authReducer } from './global/auth.reducer';
 import { CheckoutComponent } from './pages/checkout/checkout.component';
 import { QuickCheckoutComponent } from './pages/checkout/quick-checkout.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { CheckoutSuccessComponent } from './pages/checkout/checkout-success/checkout-success.component';
+import { CheckoutFailureComponent } from './pages/checkout/checkout-failure/checkout-failure.component';
+import { CheckoutPendingComponent } from './pages/checkout/checkout-pending/checkout-pending.component';
+
 
 @NgModule({
   declarations: [
@@ -44,9 +50,13 @@ import { QuickCheckoutComponent } from './pages/checkout/quick-checkout.componen
     DetailProductComponent,
     CheckoutComponent,
     QuickCheckoutComponent,
+    CheckoutSuccessComponent,
+    CheckoutFailureComponent,
+    CheckoutPendingComponent,
   ],
   imports: [
     BrowserModule,
+    CommonModule,
     AppRoutingModule,
     FormsModule,
     MatIconModule,
@@ -59,6 +69,7 @@ import { QuickCheckoutComponent } from './pages/checkout/quick-checkout.componen
     SwiperModule,
     MatSnackBarModule,
     ReactiveFormsModule,
+    MatProgressSpinnerModule,
     StoreModule.forRoot({ auth: authReducer }),
     EffectsModule.forRoot([]),
     StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production })

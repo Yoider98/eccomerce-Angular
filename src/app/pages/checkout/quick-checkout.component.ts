@@ -108,23 +108,99 @@ export class QuickCheckoutComponent implements OnInit {
     if (this.quickCheckoutForm.invalid) return;
 
     this.loading = true;
-    const formData = this.quickCheckoutForm.value;
-
-    this.checkoutService.createPreference(this.cartItems, formData.email)
-    .subscribe(res => {
+    this.checkoutService.createPreference(this.cartItems, this.quickCheckoutForm.value, false).subscribe(res => {
       console.log('Respuesta de Mercado Pago:', res);
       this.loading = false;
-      if (res.sandboxInitPoint) {
-        console.log('Redirigiendo a:', res.sandboxInitPoint);
-        window.location.href = res.sandboxInitPoint; // ✅ LLEVA AL USUARIO AL CHECKOUT DE MERCADO PAGO
+      if(res.status == "success"){
+        if (res.sandboxInitPoint) {
+          console.log('Redirigiendo a:', res.sandboxInitPoint);
+          window.location.href = res.sandboxInitPoint; // ✅ LLEVA AL USUARIO AL CHECKOUT DE MERCADO PAGO
+        } else {
+          console.error('No se recibió URL de Mercado Pago');
+        }
       } else {
-        console.error('No se recibió URL de Mercado Pago');
+        this.handleError(res);
       }
     }, err => {
       this.loading = false;
       console.error('Error al crear preferencia:', err);
+      this.handleError(err);
     });
   
+  }
+  private handleError(error: any) {
+    let errorMessage = 'No se pudo procesar el pago';
+    let errorDetails = '';
+
+    if (error.error && Array.isArray(error.error)) {
+      errorDetails = error.error.map((err, index) => `
+        <div class="error-item" style="
+          background-color: #fff3f3;
+          border-left: 4px solid #ff4444;
+          padding: 10px;
+          margin: 8px 0;
+          border-radius: 4px;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        ">
+          <div style="display: flex; align-items: center;">
+            <span style="
+              background-color: #ff4444;
+              color: white;
+              width: 54px;
+              height: 24px;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin-right: 10px;
+              font-size: 14px;
+            ">${index + 1}</span>
+            <span style="color: #333;">${err}</span>
+          </div>
+        </div>
+      `).join('');
+    } else if (error.error && typeof error.error === 'string') {
+      errorDetails = `
+        <div class="error-item" style="
+          background-color: #fff3f3;
+          border-left: 4px solid #ff4444;
+          padding: 10px;
+          margin: 8px 0;
+          border-radius: 4px;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        ">
+          <span style="color: #333;">${error.error}</span>
+        </div>
+      `;
+    }
+
+    Swal.fire({
+      icon: 'error',
+      title: 'Error en el proceso',
+      html: `
+        <div style="text-align: center; margin-bottom: 15px;">
+          <p style="color: #666; font-size: 16px;">${errorMessage}</p>
+        </div>
+        ${errorDetails ? `
+          <div style="
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            margin-top: 15px;
+          ">
+            ${errorDetails}
+          </div>
+        ` : ''}
+      `,
+      confirmButtonText: 'Entendido',
+      customClass: {
+        container: 'custom-swal-container',
+        popup: 'custom-swal-popup',
+        title: 'custom-swal-title'
+      }
+    });
   }
 
   private showMessage(message: string, type: 'success' | 'error' | 'info') {

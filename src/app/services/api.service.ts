@@ -25,26 +25,28 @@ export class ApiService {
   get<T>(endpoint: string, params?: any): Observable<T> {
     const httpParams = new HttpParams({ fromObject: params || {} });
     return this.http
-      .get<T>(`${this.baseUrl}/${endpoint}`, { params: httpParams })
+      .get<T>(`${this.baseUrl}${endpoint}`, { params: httpParams })
       .pipe(catchError(this.handleError));
   }
 
   post<T>(endpoint: string, body: any): Observable<T> {
+    console.log("body", body);
+    console.log("endpoint", `${this.baseUrl}${endpoint}`);
     return this.http
-      .post<T>(`${this.baseUrl}/${endpoint}`, body)
+      .post<T>(`${this.baseUrl}${endpoint}`, body)
       .pipe(catchError(this.handleError));
   }
 
   patch<T>(endpoint: string, body: any): Observable<T> {
     return this.http
-      .patch<T>(`${this.baseUrl}/${endpoint}`, body)
+      .patch<T>(`${this.baseUrl}${endpoint}`, body)
       .pipe(catchError(this.handleError));
   }
 
   delete<T>(endpoint: string, params?: any): Observable<T> {
     const httpParams = new HttpParams({ fromObject: params || {} });
     return this.http
-      .delete<T>(`${this.baseUrl}/${endpoint}`, { params: httpParams })
+      .delete<T>(`${this.baseUrl}${endpoint}`, { params: httpParams })
       .pipe(catchError(this.handleError));
   }
 }

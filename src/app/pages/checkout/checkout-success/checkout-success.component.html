@@ -1,5 +1,8 @@
 <div class="success-container">
-  <div class="success-content">
+  <div *ngIf="isLoading" class="spinner-grow text-primary" role="status" class=".loader">
+    <span class="sr-only">Loading...</span>
+  </div>
+  <div *ngIf="!isLoading" class="success-content">
     <div class="success-icon">
       <i class="material-icons">check_circle</i>
     </div>
@@ -16,4 +19,4 @@
       Volver al inicio
     </button>
   </div>
-</div> 
+</div>
