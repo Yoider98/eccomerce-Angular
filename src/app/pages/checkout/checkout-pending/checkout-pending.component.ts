@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { CheckoutService } from 'src/app/services/checkout.service';
 
 @Component({
   selector: 'app-checkout-pending',
@@ -11,20 +12,30 @@ export class CheckoutPendingComponent implements OnInit {
   paymentId: string = '';
   status: string = '';
   merchantOrderId: string = '';
+  isLoading: boolean = false;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private checkoutService: CheckoutService
   ) {}
 
-  ngOnInit() {
-    this.route.queryParams.subscribe(params => {
+  async ngOnInit() {
+    this.isLoading = true;
+    this.route.queryParams.subscribe(async params => {
       this.paymentId = params['payment_id'] || '';
       this.status = params['status'] || '';
       this.merchantOrderId = params['merchant_order_id'] || '';
 
-      this.showMessage('Tu pago está siendo procesado. Te notificaremos cuando esté confirmado.', 'info');
+      await this.checkoutService.getPaymentStatus(this.paymentId, this.status).then(response => {
+        if (response.status === 'success') {
+          this.isLoading = false;
+          this.showMessage('Tu pago está siendo procesado. Te notificaremos cuando esté confirmado.', 'info');
+        }
+      });
+
+     
     });
   }
 

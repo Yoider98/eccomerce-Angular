@@ -1,5 +1,8 @@
 <div class="pending-container">
-  <div class="pending-content">
+  <div *ngIf="isLoading" class="loader">
+    <!-- <mat-progress-spinner mode="indeterminate"></mat-progress-spinner> -->
+  </div>
+  <div *ngIf="!isLoading" class="pending-content">
     <div class="pending-icon">
       <i class="material-icons">schedule</i>
     </div>

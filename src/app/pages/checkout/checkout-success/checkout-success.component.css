@@ -54,4 +54,17 @@
 
 .btn-home:hover {
   background-color: #45a049;
+}
+
+.loader {
+  position: fixed; /* Fija el loader en la pantalla */
+  top: 0;
+  left: 0;
+  width: 100%; /* Cubre todo el ancho */
+  height: 100%; /* Cubre toda la altura */
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo semitransparente oscuro */
+  display: flex;
+  justify-content: center; /* Centra horizontalmente el contenido */
+  align-items: center; /* Centra verticalmente el contenido */
+  z-index: 1000; /* Asegura que esté por encima de otros elementos */
 } 
