@@ -32,4 +32,4 @@ jobs:
       - name: Deploy to GitHub Pages
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: npx angular-cli-ghpages --dir=dist/eccomerce-Angular --repo=https://$GH_TOKEN@github.com/Yoider98/eccomerce-Angular.git --name="yoider98" --email="yoider98@users.noreply.github.com"
+        run: npx angular-cli-ghpages --dir=dist/ecommerce-app --repo=https://$GH_TOKEN@github.com/Yoider98/eccomerce-Angular.git --name="yoider98" --email="yoider98@users.noreply.github.com"
