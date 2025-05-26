@@ -1,6 +1,6 @@
 import { BrowserModule } from "@angular/platform-browser";
 import { NgModule } from "@angular/core";
-import { CommonModule } from '@angular/common';
+import { CommonModule } from "@angular/common";
 
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
@@ -21,21 +21,15 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MatButtonModule } from "@angular/material/button";
 import { MatInputModule } from "@angular/material/input";
 import { MatExpansionModule } from "@angular/material/expansion";
-import { SwiperModule } from 'swiper/angular';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { StoreModule } from '@ngrx/store';
-import { EffectsModule } from '@ngrx/effects';
-import { StoreDevtoolsModule } from '@ngrx/store-devtools';
-import { environment } from '../environments/environment';
-import { ReactiveFormsModule } from '@angular/forms';
-import { authReducer } from './global/auth.reducer';
-import { CheckoutComponent } from './pages/checkout/checkout.component';
-import { QuickCheckoutComponent } from './pages/checkout/quick-checkout.component';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { CheckoutSuccessComponent } from './pages/checkout/checkout-success/checkout-success.component';
-import { CheckoutFailureComponent } from './pages/checkout/checkout-failure/checkout-failure.component';
-import { CheckoutPendingComponent } from './pages/checkout/checkout-pending/checkout-pending.component';
-
+import { SwiperModule } from "swiper/angular";
+import { MatSnackBarModule } from "@angular/material/snack-bar";
+import { ReactiveFormsModule } from "@angular/forms";
+import { CheckoutComponent } from "./pages/checkout/checkout.component";
+import { QuickCheckoutComponent } from "./pages/checkout/quick-checkout.component";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { CheckoutSuccessComponent } from "./pages/checkout/checkout-success/checkout-success.component";
+import { CheckoutFailureComponent } from "./pages/checkout/checkout-failure/checkout-failure.component";
+import { CheckoutPendingComponent } from "./pages/checkout/checkout-pending/checkout-pending.component";
 
 @NgModule({
   declarations: [
@@ -70,9 +64,6 @@ import { CheckoutPendingComponent } from './pages/checkout/checkout-pending/chec
     MatSnackBarModule,
     ReactiveFormsModule,
     MatProgressSpinnerModule,
-    StoreModule.forRoot({ auth: authReducer }),
-    EffectsModule.forRoot([]),
-    StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production })
   ],
   providers: [],
   bootstrap: [AppComponent],

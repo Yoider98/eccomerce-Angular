@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
+import { catchError, tap } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root'
 })
@@ -42,11 +43,27 @@ export class CheckoutService {
   }
 
 
-  async getPaymentStatus(paymentId: string, cartId: string, userId:string): Promise<any> {  
-      return this.api.get<any>(`payment/status${paymentId}?cartId=${cartId}&userId=${userId}`);
+  async getPaymentStatus(paymentId: string, cartId: string, userId?:string): Promise<any> {  
+    console.log("URL construida:", `payment/status/${paymentId}?cartId=${cartId}&userId=${userId}`);
+    
+    return this.api.get<any>(`payment/status/${paymentId}?cartId=${cartId}&userId=${userId}`)
+      .pipe(
+        tap(response => console.log("Respuesta de la API:", response)),
+        catchError(error => {
+          console.error("Error en la llamada:", error);
+          throw error;
+        })
+      ).toPromise();
   }
 
   async deleteCart(cartId: string): Promise<any> {  
-    return this.api.delete<any>(`carts${cartId}`);
+    console.log("URL construida:", `carts${cartId}`);
+    return this.api.delete<any>(`carts/${cartId}`).pipe(
+      tap(response => console.log("Respuesta de la API:", response)),
+      catchError(error => {
+        console.error("Error en la llamada:", error);
+        throw error;
+      })
+    ).toPromise();;
 }
 }

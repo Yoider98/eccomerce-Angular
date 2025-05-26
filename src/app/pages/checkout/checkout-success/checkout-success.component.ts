@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CheckoutService } from 'src/app/services/checkout.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-checkout-success',
@@ -31,7 +32,7 @@ export class CheckoutSuccessComponent implements OnInit {
       try {
         const cartId = JSON.parse(localStorage.getItem('cartId'));
         const user = JSON.parse(localStorage.getItem('user'));
-        const response = await this.checkoutService.getPaymentStatus(this.paymentId, cartId, user.id);
+        const response = await this.checkoutService.getPaymentStatus(this.paymentId, cartId, (user != null)?user.id:null);
         if (response.status === 'success') {
           this.showMessage('¡Pago exitoso! Gracias por tu compra.', 'success');
         } else {
@@ -46,14 +47,14 @@ export class CheckoutSuccessComponent implements OnInit {
   }
 
   private showMessage(message: string, type: 'success' | 'error' | 'info') {
-    this.snackBar.open(message, 'Cerrar', {
-      duration: 5000,
-      horizontalPosition: 'end',
-      verticalPosition: 'top',
-      panelClass: [`snackbar-${type}`]
+    Swal.fire({
+      title: type === 'success' ? '¡Éxito!' : type === 'error' ? '¡Error!' : 'Información',
+      text: message,
+      icon: type,
+      confirmButtonText: 'Aceptar',
+      confirmButtonColor: '#3085d6'
     });
   }
-
   goToHome() {
     this.router.navigate(['/']);
   }

@@ -7,8 +7,7 @@ import {
 } from "@angular/forms";
 import { Router, ActivatedRoute } from "@angular/router";
 import { AuthService } from "src/app/services/auth.service";
-import { Store } from "@ngrx/store";
-import { loginSuccess } from "../../global/auth.actions";
+import Swal from "sweetalert2";
 
 @Component({
   selector: "app-login",
@@ -16,10 +15,11 @@ import { loginSuccess } from "../../global/auth.actions";
   styleUrls: ["./login.component.css"],
 })
 export class LoginComponent {
-  loading: boolean = false; // Estado para mostrar el cargando
-  errorMessage: string = ""; // Mensaje de error
-  showErrorModal: boolean = false; // Controla la visibilidad del modal de error
+  loading: boolean = false;
+  errorMessage: string = "";
+  showErrorModal: boolean = false;
   showSuccessNotification: boolean = false;
+  showChangeSuccessNotification: boolean = false;
   showPassword: boolean = false;
   showConfirmPassword: boolean = false;
 
@@ -35,16 +35,13 @@ export class LoginComponent {
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private route: ActivatedRoute,
-    private store: Store
+    private route: ActivatedRoute
   ) {
-    // Formulario de inicio de sesión
     this.loginForm = this.fb.group({
       email: ["", [Validators.required, Validators.email]],
       password: ["", [Validators.required]],
     });
 
-    // Formulario de registro
     this.registerForm = this.fb.group(
       {
         name: ["", [Validators.required, Validators.minLength(3)]],
@@ -53,160 +50,221 @@ export class LoginComponent {
         confirmPassword: ["", Validators.required],
       },
       { validators: this.passwordMatchValidator }
-    ); // ✅ Correcto
+    );
   }
-  ngOnInit() {
-    const savedEmail = localStorage.getItem("rememberedEmail");
-    if (savedEmail) {
-      this.rememberMe = true;
-      this.loginForm.get("email").setValue(savedEmail);
+
+  passwordValidator(control: AbstractControl) {
+    const password = control.value;
+    if (!password) return null;
+
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumbers = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    const isLongEnough = password.length >= 8;
+
+    const valid = hasUpperCase && hasLowerCase && hasNumbers && hasSpecialChar && isLongEnough;
+    return valid ? null : { passwordStrength: true };
+  }
+
+  passwordMatchValidator(group: AbstractControl) {
+    const password = group.get("password")?.value;
+    const confirmPassword = group.get("confirmPassword")?.value;
+
+    if (password !== confirmPassword) {
+      group.get("confirmPassword")?.setErrors({ passwordMismatch: true });
+      return { passwordMismatch: true };
     }
+    return null;
+  }
+
+  onLoginSubmit() {
+    if (this.loginForm.invalid) return;
+
+    this.loading = true;
+    this.errorMessage = "";
+
+    const { email, password } = this.loginForm.value;
+    console.log('Intentando login con:', { email });
+
+    this.authService.login({ email, password }).subscribe({
+      next: (response) => {
+        console.log("Respuesta del servidor:", response);
+        this.loading = false;
+        
+        if (response && response.token) {
+          console.log("Login exitoso, token recibido");
+          const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+          this.router.navigate([returnUrl]);
+        } else {
+          console.log("Login fallido, respuesta sin token");
+          Swal.fire({
+            icon: 'error',
+            title: 'Error de inicio de sesión',
+            text: 'Credenciales inválidas',
+            confirmButtonText: 'Entendido'
+          });
+        }
+      },
+      error: (error) => {
+        this.loading = false;
+        //console.error('Error completo:', error);
+        
+        Swal.fire({
+          icon: 'error',
+          title: 'Error de inicio de sesión',
+          text: error.message || 'Ha ocurrido un error al intentar iniciar sesión',
+          confirmButtonText: 'Entendido'
+        });
+      }
+    });
+  }
+
+  onRegisterSubmit() {
+    if (this.registerForm.invalid){
+      const formErrors = [];
+      
+      if (this.registerForm.get('name')?.errors) {
+        if (this.registerForm.get('name')?.errors['required']) {
+          formErrors.push('El nombre es requerido');
+        }
+        if (this.registerForm.get('name')?.errors['minlength']) {
+          formErrors.push('El nombre debe tener al menos 3 caracteres');
+        }
+      }
+
+      if (this.registerForm.get('email')?.errors) {
+        if (this.registerForm.get('email')?.errors['required']) {
+          formErrors.push('El correo electrónico es requerido');
+        }
+        if (this.registerForm.get('email')?.errors['email']) {
+          formErrors.push('Ingrese un correo electrónico válido');
+        }
+      }
+
+      if (this.registerForm.get('password')?.errors) {
+        if (this.registerForm.get('password')?.errors['required']) {
+          formErrors.push('La contraseña es requerida');
+        }
+        if (this.registerForm.get('password')?.errors['passwordStrength']) {
+          formErrors.push('La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial');
+        }
+      }
+
+      if (this.registerForm.get('confirmPassword')?.errors) {
+        if (this.registerForm.get('confirmPassword')?.errors['required']) {
+          formErrors.push('La confirmación de contraseña es requerida');
+        }
+        if (this.registerForm.get('confirmPassword')?.errors['passwordMismatch']) {
+          formErrors.push('Las contraseñas no coinciden');
+        }
+      }
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Error de validación',
+        html: formErrors.join('<br>'),
+        confirmButtonText: 'Entendido'
+      });
+    }else{
+      this.loading = true;
+      this.errorMessage = "";
+  
+      const { name, email, password } = this.registerForm.value;
+  
+      this.authService.register({ name, email, password }).subscribe(
+        (response) => {
+          this.loading = false;
+          if (response && response.token) {
+            this.showSuccessNotification = true;
+            this.authService.saveInfoSession(response.token, response.user)
+            setTimeout(() => {
+              const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+              this.router.navigate([returnUrl]);
+            }, 1000);
+          }
+        },
+        (error) => {
+          this.loading = false;
+          this.showError(
+            error.error.error.message || "Error en el registro"
+          );
+        }
+      );
+    }
+  }
+
+  sendPasswordReset() {
+    if (!this.resetEmail) {
+      this.showError("Por favor ingresa tu correo electrónico");
+      return;
+    }
+
+    this.loading = true;
+    this.errorMessage = "";
+
+    this.authService.resetPassword(this.resetEmail).subscribe(
+      (response) => {
+        this.loading = false;
+        this.showModal = false;
+        console.log("response -> ", response)
+        if(response.status == "success"){
+          this.showChangeSuccessNotification = true;
+          setTimeout(() => {
+            this.showChangeSuccessNotification = false;
+          }, 3000);
+        }else{
+          Swal.fire({
+            icon: 'error',
+            title: 'Error al cambiar contraseña',
+            text: response.message || 'Ha ocurrido un error al cambiar contraseña',
+            confirmButtonText: 'Entendido'
+          });
+        }
+
+      },
+      (error) => {
+        this.loading = false;
+        this.showError(
+          error.error.error.message || "Error al restablecer la contraseña"
+        );
+      }
+    );
   }
 
   showError(message: string) {
     this.errorMessage = message;
     this.showErrorModal = true;
   }
-  // Validador personalizado para la contraseña
-  passwordValidator(control: AbstractControl) {
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
-    if (!passwordRegex.test(control.value)) {
-      return { passwordInvalid: true };
-    }
-    return null;
+
+  closeModal() {
+    this.showErrorModal = false;
+    this.errorMessage = "";
   }
 
-  passwordMatchValidator(formGroup: AbstractControl) {
-    const passwordControl = formGroup.get("password");
-    const confirmPasswordControl = formGroup.get("confirmPassword");
-
-    if (!passwordControl || !confirmPasswordControl) return null;
-
-    return passwordControl.value === confirmPasswordControl.value
-      ? null
-      : { mismatch: true };
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
   }
 
-  onLoginSubmit() {
-    if (this.loginForm.invalid) return;
-
-    this.loading = true; // Activar estado de carga
-    this.errorMessage = ""; // Limpiar errores anteriores
-
-    const { email, password } = this.loginForm.value;
-
-    this.authService.login({ email, password }).subscribe(
-      (response) => {
-        this.loading = false;
-        if (response && response.token) {
-          localStorage.setItem("token", response.token);
-          localStorage.setItem("user", JSON.stringify(response.user));
-          this.store.dispatch(loginSuccess({ user: response.user, token: response.token }));
-          this.onLoginSuccess();
-        } else if (response && response.error) {
-          console.log("Error de inicio de sesión:", response);
-          this.showError(response.error.message || "Error de inicio de sesión");
-        }
-      },
-      (error) => {
-        this.loading = false;
-        this.showError(
-          error.error.error.message || "Error de inicio de sesión"
-        );
-        console.error(error);
-      }
-    );
-  }
-  onRegisterSubmit() {
-    console.log("Formulario de registro:", this.registerForm.value);
-    if (this.registerForm.invalid) {
-      console.log("Formulario inválido");
-      this.registerForm.markAllAsTouched();
-      this.showError("Por favor, revise el formulario, y corrija los errores.");
-      return;
-    }
-
-    this.loading = true; // Activar estado de carga
-    this.errorMessage = ""; // Limpiar errores anteriores
-
-    const { name, email, password, confirmPassword } = this.registerForm.value;
-
-    if (password !== confirmPassword) {
-      this.showError("Las contraseñas no coinciden.");
-      this.loading = false;
-      return;
-    }
-
-    this.authService.register({ name, email, password }).subscribe(
-      (response) => {
-        this.loading = false;
-        if (response && response.status) {
-          this.toggleForm(); // Cambiar a formulario de login si deseas
-          this.registerForm.reset();
-          this.showSuccessNotification = true;
-          this.loginForm.get("email").setValue(email); // Prellenar el campo de correo electrónico
-          setTimeout(() => {
-            this.showSuccessNotification = false;
-          }, 3000);
-        } else {
-          this.showError(response.message || "Error al registrarse");
-        }
-      },
-      (error) => {
-        this.loading = false;
-        this.showError(error.message || "Error al registrarse");
-        console.error(error);
-      }
-    );
-  }
-
-  openForgotPasswordModal() {
-    this.showModal = true;
-  }
-
-  closeForgotPasswordModal() {
-    this.showModal = false;
-  }
-
-  sendPasswordReset() {
-    this.loading = true; // Activar estado de carga
-    this.errorMessage = ""; // Limpiar errores anteriores
-    console.log("Se envió el correo de recuperación a:", this.resetEmail);
-    this.authService.resetPassword(this.resetEmail).subscribe(
-      (response) => {
-        this.loading = false;
-        if (response && response.status == "success") {
-          this.showModal = false; // Cerrar el modal
-          this.resetEmail = ""; // Limpiar el campo de correo electrónico
-          this.showError(response.message || "Correo de recuperación enviado.");
-        } else {
-          this.showError(
-            "Hubo un error al restablecer contraseña. Intenta nuevamente."
-          );
-        }
-      },
-      (error) => {
-        this.loading = false;
-        this.showError(
-          error.message || "Error al enviar el correo de recuperación"
-        );
-        console.error(error);
-      }
-    );
+  toggleConfirmPasswordVisibility() {
+    this.showConfirmPassword = !this.showConfirmPassword;
   }
 
   toggleForm() {
     this.isLogin = !this.isLogin;
-    this.errorMessage = ""; // Limpiar error al cambiar de formulario
-  }
-  // Cerrar el modal de error
-  closeModal() {
+    this.errorMessage = "";
     this.showErrorModal = false;
   }
 
-  onLoginSuccess() {
-    console.log('returnUrl recibido:', this.route.snapshot.queryParams['returnUrl']);
-    const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-    this.router.navigate([returnUrl]);
+  openForgotPasswordModal() {
+    this.showModal = true;
+    this.resetEmail = "";
   }
+
+  closeForgotPasswordModal() {
+    this.showModal = false;
+    this.resetEmail = "";
+  }
+
 }
+

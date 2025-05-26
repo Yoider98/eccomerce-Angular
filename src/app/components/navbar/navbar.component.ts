@@ -1,9 +1,7 @@
-import { Component, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
 import { AuthService } from "../../services/auth.service";
 import { Router } from "@angular/router";
-import { Store } from '@ngrx/store';
-import { selectIsAuthenticated } from '../../global/auth.selectors';
-import { logout } from '../../global/auth.actions';
+import { BehaviorSubject } from "rxjs";
 
 @Component({
   selector: "app-navbar",
@@ -11,17 +9,22 @@ import { logout } from '../../global/auth.actions';
   styleUrls: ["./navbar.component.css"],
 })
 export class NavbarComponent {
-  isAuthenticated$ = this.store.select(selectIsAuthenticated);
   menuOpen = false;
+  isAuthenticated$ = new BehaviorSubject<boolean>(this.authService.isAuthenticated());
 
-  constructor( private router: Router, private store: Store) {}
-
-
+  constructor(
+    private router: Router,
+    private authService: AuthService
+  ) {
+    
+    // Suscribirse a los cambios en el token
+    this.authService.token$.subscribe(token => {
+      this.isAuthenticated$.next(!!token);
+    });
+  }
 
   logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    this.store.dispatch(logout());
+    this.authService.logout();
     this.router.navigate(["/"]);
   }
 
